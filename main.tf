@@ -28,8 +28,8 @@ resource "google_compute_network" "network" {
 	Shared VPC
  *****************************************/
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
-  count   = "${var.shared_vpc_host == "true" ? 1 : 0}"
-  project = "${var.project_id}"
+  count      = "${var.shared_vpc_host == "true" ? 1 : 0}"
+  project    = "${var.project_id}"
   depends_on = ["google_compute_network.network"]
 
 }
@@ -67,15 +67,15 @@ resource "google_compute_route" "route" {
   project = "${var.project_id}"
   network = "${var.network_name}"
 
-  name                   = "${lookup(var.routes[count.index], "name", format("%s-%s-%d", lower(var.network_name), "route",count.index))}"
-  description            = "${lookup(var.routes[count.index], "description","")}"
-  tags                   = "${compact(split(",",lookup(var.routes[count.index], "tags","")))}"
-  dest_range             = "${lookup(var.routes[count.index], "destination_range","")}"
-  next_hop_gateway       = "${lookup(var.routes[count.index], "next_hop_internet","") == "true" ? "default-internet-gateway":""}"
-  next_hop_ip            = "${lookup(var.routes[count.index], "next_hop_ip","")}"
-  next_hop_instance      = "${lookup(var.routes[count.index], "next_hop_instance","")}"
-  next_hop_instance_zone = "${lookup(var.routes[count.index], "next_hop_instance_zone","")}"
-  next_hop_vpn_tunnel    = "${lookup(var.routes[count.index], "next_hop_vpn_tunnel","")}"
+  name                   = "${lookup(var.routes[count.index], "name", format("%s-%s-%d", lower(var.network_name), "route", count.index))}"
+  description            = "${lookup(var.routes[count.index], "description", "")}"
+  tags                   = "${compact(split(",", lookup(var.routes[count.index], "tags", "")))}"
+  dest_range             = "${lookup(var.routes[count.index], "destination_range", "")}"
+  next_hop_gateway       = "${lookup(var.routes[count.index], "next_hop_internet", "") == "true" ? "default-internet-gateway" : ""}"
+  next_hop_ip            = "${lookup(var.routes[count.index], "next_hop_ip", "")}"
+  next_hop_instance      = "${lookup(var.routes[count.index], "next_hop_instance", "")}"
+  next_hop_instance_zone = "${lookup(var.routes[count.index], "next_hop_instance_zone", "")}"
+  next_hop_vpn_tunnel    = "${lookup(var.routes[count.index], "next_hop_vpn_tunnel", "")}"
   priority               = "${lookup(var.routes[count.index], "priority", "1000")}"
 
   depends_on = [
@@ -91,7 +91,7 @@ resource "null_resource" "delete_default_internet_gateway_routes" {
     command = "${path.module}/scripts/delete-default-gateway-routes.sh ${var.project_id} ${var.network_name}"
   }
 
-  triggers =  {
+  triggers = {
     number_of_routes = "${length(var.routes)}"
   }
 
